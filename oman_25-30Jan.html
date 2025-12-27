@@ -1,0 +1,2933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Detailed Itinerary</title>
+<style>
+:root {
+  --primary: #667eea;
+  --primary-dark: #5a67d8;
+  --primary-light: #7c93f5;
+  --secondary: #764ba2;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fc;
+  --bg-card: #ffffff;
+  --text-primary: #1a202c;
+  --text-secondary: #4a5568;
+  --text-muted: #718096;
+  --border-color: #e2e8f0;
+  --border-light: #edf2f7;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
+  --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-subtle: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  --gray-100: #f3f4f6;
+}
+
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text-primary);
+  background: var(--gradient-bg);
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
+}
+
+
+/* Unsplash Images Carousel Styling */
+.unsplash-carousel-container {
+  position: relative;
+  width: 100%;
+  margin: 0.5rem 0;
+  overflow: hidden;
+  padding-bottom: 0.5rem;
+}
+
+
+.unsplash-carousel {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  padding: 0.5rem 0;
+  padding-bottom: 20px;
+  margin-bottom: -20px;
+  
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+
+.unsplash-carousel::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+
+.unsplash-image-wrapper {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  position: relative;
+  width: 240px;
+}
+
+
+.unsplash-place-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primary);
+  padding: 0.2rem 0.5rem;
+  background: var(--gradient-subtle);
+  border-radius: 0.25rem;
+  text-align: center;
+}
+
+
+.unsplash-image-wrapper img {
+  width: 100%;
+  height: 160px;
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-sm);
+  object-fit: cover;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+.unsplash-image-wrapper img:hover {
+  transform: scale(1.02);
+  box-shadow: var(--shadow-md);
+}
+
+
+.unsplash-attribution {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-style: italic;
+  text-align: center;
+  line-height: 1.2;
+}
+
+
+.unsplash-attribution a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+
+.unsplash-attribution a:hover {
+  text-decoration: underline;
+}
+
+
+body.toc-open .content-wrapper {
+  filter: blur(4px) brightness(0.9);
+  transition: filter 0.25s ease;
+}
+
+
+body.toc-open .floating-toc,
+body.toc-open .whatsapp-fab,
+body.toc-open .share-fab,
+body.toc-open .toc-fab,
+body.toc-open .scroll-progress {
+  filter: none;
+}
+
+
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  transform: scaleX(0);
+  transform-origin: 0%;
+  z-index: 10000;
+  transition: transform 0.1s;
+}
+
+
+.page-header {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-light);
+  padding: 0.5rem 1rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+  transform: translateY(0);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  height: 64px;
+  display: flex;
+  align-items: center;
+}
+
+
+.page-header.hidden {
+  transform: translateY(-100%);
+}
+
+
+.page-header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 0.75rem;
+}
+
+
+.page-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+
+.page-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.2;
+  max-width: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.page-header-underline {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), transparent);
+  opacity: 0.6;
+}
+
+
+.reading-time {
+  gap: 0.3rem;
+  background: rgba(102, 126, 234, 0.06);
+  padding: 0.22rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  border: 1px solid rgba(102, 126, 234, 0.35);
+  box-shadow: 0 2px 6px rgba(102, 126, 234, 0.25);
+}
+
+
+.whatsapp-fab {
+  position: fixed;
+  top: 16px;
+  right: 18px;
+  width: 46px;
+  height: 46px;
+  background: linear-gradient(135deg, #25D366, #128C7E);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(37, 211, 102, 0.45);
+  font-size: 18px;
+  z-index: 1100;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.whatsapp-fab:hover {
+  transform: scale(1.08);
+  box-shadow: 0 8px 20px rgba(37, 211, 102, 0.55);
+}
+
+.whatsapp-fab:active {
+  transform: scale(0.95);
+}
+
+
+body.toc-open .whatsapp-fab {
+  filter: none;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .whatsapp-fab {
+    top: 50px;
+    right: 14px;
+    width: 42px;
+    height: 42px;
+  }
+}
+
+
+.share-fab {
+  position: fixed;
+  top: 70px;
+  right: 18px;
+  width: 46px;
+  height: 46px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.45);
+  font-size: 18px;
+  z-index: 1100;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+.share-fab:hover {
+  transform: scale(1.08);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.55);
+}
+
+
+.share-fab:active {
+  transform: scale(0.95);
+}
+
+
+.toc-fab {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  min-width: 190px;
+  height: 54px;
+  background: linear-gradient(
+    135deg,
+    #0fb9b1,
+    #2d98da
+  );
+  color: #fff;
+  border: none;
+  border-radius: 27px;
+  cursor: pointer;
+  box-shadow: 0 14px 30px rgba(102, 126, 234, 0.55);
+  font-size: 15px;
+  font-weight: 650;
+  z-index: 1000;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  -webkit-tap-highlight-color: transparent;
+  opacity: 0;
+  visibility: hidden;
+  text-decoration: none;
+  letter-spacing: 0.4px;
+  padding: 0 18px;
+  white-space: nowrap;
+}
+
+
+.toc-fab::before {
+  content: 'Jump to section';
+  font-size: 11px;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-right: 4px;
+}
+
+
+.toc-fab.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+
+.toc-fab:hover {
+  transform: translateX(-50%) translateY(-4px) scale(1.03);
+  box-shadow: 0 18px 38px rgba(102, 126, 234, 0.65);
+}
+
+
+.toc-fab:active {
+  transform: translateX(-50%) translateY(1px) scale(0.97);
+}
+
+
+.floating-toc {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(360px, 90vw);
+  max-height: 70vh;
+  background: rgba(248, 249, 255, 0.98);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(102, 126, 234, 0.25);
+  border-radius: 1.25rem;
+  box-shadow: var(--shadow-lg);
+  z-index: 1200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  overflow: hidden;
+}
+
+
+.floating-toc.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+
+body.dark .floating-toc {
+  background: rgba(30, 37, 51, 0.98);
+  border-color: rgba(102, 126, 234, 0.35);
+}
+
+
+.toc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-light);
+  min-height: 44px;
+  background: var(--gradient-subtle);
+}
+
+
+.toc h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+
+.toc-toggle {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 1rem;
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.toc-toggle:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+}
+
+
+.toc-toggle:active {
+  transform: scale(0.95);
+}
+
+
+.toc-toggle.collapsed {
+  transform: rotate(-90deg);
+}
+
+
+.toc-content {
+  max-height: 400px;
+  overflow-y: auto;
+  transition: all 0.3s ease;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) var(--gray-100);
+  padding: 0.5rem 0;
+}
+
+
+.toc-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+
+.toc-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+
+.toc-content::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 2px;
+}
+
+
+.toc-content.collapsed {
+  max-height: 0;
+  overflow: hidden;
+}
+
+
+.toc ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+
+.toc li {
+  margin: 0.15rem 0;
+}
+
+
+.toc a {
+  color: var(--text-secondary);
+  display: block;
+  padding: 0.5rem 1.5rem;
+  border-radius: 0;
+  transition: all 0.2s;
+  text-decoration: none;
+  border-left: 3px solid transparent;
+  font-size: 0.95rem;
+}
+
+
+.toc a:hover,
+.toc a:active {
+  background: rgba(102, 126, 234, 0.15);
+  color: var(--primary);
+  border-left-color: var(--primary);
+  transform: translateX(4px);
+}
+
+
+.toc a.active {
+  background: rgba(102, 126, 234, 0.25);
+  color: var(--primary);
+  font-weight: 600;
+  border-left-color: var(--primary);
+}
+
+
+.content-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+  padding-top: 84px;
+  padding-bottom: 5rem;
+}
+
+
+.content-container {
+  background: var(--bg-card);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+
+.main-content {
+  padding: 1.5rem;
+}
+
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
+  font-weight: 700;
+  line-height: 1.3;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  scroll-margin-top: 10rem;
+}
+
+
+h1 {
+  font-size: 2rem;
+  margin-top: 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 3px solid var(--primary);
+}
+
+
+h2 {
+  font-size: 1.625rem;
+  color: var(--primary);
+  margin-top: 2.5rem;
+  padding-left: 0.75rem;
+  border-left: 4px solid var(--primary);
+}
+
+
+h3 {
+  font-size: 1.375rem;
+  color: var(--primary-dark);
+  margin-top: 2rem;
+}
+
+
+h4 {
+  font-size: 1.125rem;
+  margin-top: 1.5rem;
+}
+
+
+h5 {
+  font-size: 1rem;
+  margin-top: 1.25rem;
+}
+
+
+h6 {
+  font-size: 1.0625rem;
+  margin-top: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+
+p {
+  margin-bottom: 1.25rem;
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+
+a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+  transition: color 0.2s;
+}
+
+
+a:hover,
+a:active {
+  color: var(--primary-dark);
+}
+
+
+strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+
+em {
+  font-style: italic;
+  color: var(--text-primary);
+}
+
+
+hr {
+  border: none;
+  height: 1px;
+  background: var(--border-color);
+  margin: 2rem 0;
+}
+
+
+ul, ol {
+  margin-bottom: 1.5rem;
+  padding-left: 1.5rem;
+}
+
+
+li {
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+
+li::marker {
+  color: var(--primary);
+}
+
+
+.content-image {
+  margin: 1.5rem 0;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  background: var(--bg-secondary);
+}
+
+
+.content-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+
+.content-image figcaption {
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  text-align: center;
+  background: var(--bg-secondary);
+  font-style: italic;
+}
+
+
+.table-wrapper {
+  margin: 1.5rem 0;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-light);
+  transition: all 0.3s;
+}
+
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+
+th, td {
+  padding: 1rem 1.25rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-light);
+}
+
+
+th {
+  background: var(--gradient-bg);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+
+tbody tr {
+  background: var(--bg-primary);
+  transition: all 0.2s;
+}
+
+
+tbody tr:hover {
+  background: var(--bg-secondary);
+}
+
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+
+td {
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+}
+
+
+@media (min-width: 769px) {
+  td.images-cell {
+    width: 420px;
+    max-width: 420px;
+    min-width: 420px;
+  }
+  
+  td.images-cell .unsplash-carousel-container {
+    width: 420px;
+    max-width: 420px;
+  }
+}
+
+
+blockquote {
+  border-left: 4px solid var(--primary);
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  background: var(--gradient-subtle);
+  border-radius: 0.5rem;
+  font-style: italic;
+  color: var(--text-primary);
+}
+
+
+code {
+  background: var(--bg-secondary);
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.375rem;
+  font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+  font-size: 0.875em;
+  color: var(--primary);
+  border: 1px solid var(--border-light);
+}
+
+
+@media (max-width: 768px) {
+  body {
+    font-size: 17px;
+    line-height: 1.75;
+  }
+
+
+  .page-header {
+    padding: 0.5rem 0.875rem;
+    height: 60px;
+  }
+
+
+  .page-header-content {
+    max-width: 100%;
+  }
+
+
+  .page-title {
+    font-size: 0.98rem;
+  }
+
+
+  .reading-time {
+    font-size: 0.75rem;
+    padding: 0.22rem 0.65rem;
+  }
+
+
+  .content-wrapper {
+    max-width: 100%;
+    padding: 0.75rem;
+    padding-top: 76px;
+    padding-bottom: 4rem;
+  }
+
+
+  .content-container {
+    border-radius: 0.75rem;
+  }
+
+
+  .main-content {
+    padding: 1.25rem;
+  }
+
+
+  h1 {
+    font-size: 1.75rem;
+  }
+
+
+  h2 {
+    font-size: 1.5rem;
+    margin-top: 2rem;
+    padding-left: 0.625rem;
+    border-left-width: 3px;
+  }
+
+
+  h3 {
+    font-size: 1.25rem;
+  }
+
+
+  h4 {
+    font-size: 1.0625rem;
+  }
+
+
+  h6 {
+    font-size: 0.9375rem;
+  }
+
+
+  p {
+    font-size: 1.0625rem;
+    margin-bottom: 1.125rem;
+  }
+
+
+  li {
+    font-size: 1.0625rem;
+    margin-bottom: 0.625rem;
+  }
+
+
+  .table-wrapper {
+    margin: 1.25rem -0.5rem;
+    border-radius: 0.625rem;
+  }
+
+
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+
+
+  thead tr {
+    display: none;
+  }
+
+
+  tbody tr {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--primary);
+    border-radius: 0.625rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+
+  tbody tr:last-child {
+    margin-bottom: 0;
+  }
+
+
+  td {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    border: none;
+    padding: 0.75rem 0;
+    font-size: 1rem;
+  }
+
+
+  td:not(:last-child) {
+    border-bottom: 1px solid var(--border-light);
+  }
+
+
+  td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--primary);
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+
+  .content-image {
+    margin: 1.25rem -0.5rem;
+    border-radius: 0.625rem;
+  }
+
+
+  .content-image figcaption {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.8125rem;
+  }
+
+
+  h1, h2, h3, h4, h5, h6 {
+    scroll-margin-top: 8rem;
+  }
+
+
+  .toc-fab {
+    bottom: 24px;
+    right: 16px;
+    left: auto;
+    transform: translateY(10px);
+    min-width: 165px;
+    height: 52px;
+    font-size: 14px;
+    border-radius: 26px;
+    padding: 0 16px;
+    box-shadow: 0 18px 40px rgba(102, 126, 234, 0.7);
+    background: linear-gradient(
+      135deg,
+      #0fb9b1,
+      #2d98da
+    );
+  }
+
+
+  .toc-fab::before {
+    content: '';
+    margin-right: 0;
+  }
+
+
+  .toc-fab.show {
+    transform: translateY(0);
+  }
+
+
+  .floating-toc {
+    width: 90vw;
+    max-height: 70vh;
+  }
+
+
+  .whatsapp-fab {
+    top: 50px;
+    right: 14px;
+    width: 42px;
+    height: 42px;
+    font-size: 16px;
+  }
+
+    .share-fab {
+    top: 98px;
+    right: 14px;
+    width: 42px;
+    height: 42px;
+    font-size: 16px;
+  }
+
+}
+
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .content-wrapper {
+    padding: 1.5rem;
+    padding-top: 88px;
+  }
+
+
+  .main-content {
+    padding: 2rem;
+  }
+  
+  .toc-fab {
+    bottom: 28px;
+    right: 24px;
+    left: auto;
+    transform: translateY(10px);
+    min-width: 170px;
+    height: 52px;
+    font-size: 14px;
+  }
+
+
+  .toc-fab.show {
+    transform: translateY(0);
+  }
+}
+
+
+@media (min-width: 1025px) {
+  .content-wrapper {
+    padding: 2rem 1rem;
+    padding-top: 90px;
+  }
+
+
+  .main-content {
+    padding: 2.5rem;
+  }
+}
+
+
+@supports (padding: env(safe-area-inset-bottom)) {
+  .content-wrapper {
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+
+@media print {
+  body {
+    background: white;
+  }
+
+
+  .page-header,
+  .whatsapp-fab,
+  .share-fab,
+  .toc-fab,
+  .floating-toc {
+    display: none !important;
+  }
+
+
+  .content-wrapper {
+    padding-top: 0 !important;
+  }
+
+
+  .content-container {
+    box-shadow: none;
+  }
+}
+
+.roamio-pill-cta {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  min-width: 56px;
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(255, 107, 107, 0.5);
+  font-size: 14px;
+  font-weight: 650;
+  z-index: 999;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  -webkit-tap-highlight-color: transparent;
+  opacity: 0;
+  visibility: hidden;
+  text-decoration: none;
+  letter-spacing: 0.3px;
+  padding: 0;
+  white-space: nowrap;
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 8px 24px rgba(255, 107, 107, 0.5);
+  }
+  50% {
+    box-shadow: 0 8px 32px rgba(255, 107, 107, 0.8);
+  }
+}
+
+.roamio-pill-cta.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.roamio-pill-cta:hover {
+  transform: translateX(-50%) translateY(-4px) scale(1.05);
+  box-shadow: 0 12px 32px rgba(255, 107, 107, 0.7);
+  animation: none;
+}
+
+.roamio-pill-cta:active {
+  transform: translateX(-50%) translateY(1px) scale(0.98);
+}
+
+.roamio-pill-cta svg {
+  width: 28px;
+  height: 28px;
+  transition: transform 0.2s;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.roamio-pill-cta:hover svg {
+  transform: scale(1.15) rotate(5deg);
+}
+
+.roamio-pill-cta::after {
+  content: 'Create your own';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+  font-weight: 500;
+  z-index: 1;
+}
+
+.roamio-pill-cta:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-12px);
+}
+
+@media (max-width: 768px) {
+  .roamio-pill-cta {
+    bottom: 88px;
+    right: 16px;
+    left: auto;
+    transform: translateY(10px);
+  }
+
+  .roamio-pill-cta.show {
+    transform: translateY(0);
+  }
+
+  .roamio-pill-cta:hover {
+    transform: translateY(-3px) scale(1.05);
+  }
+
+  .roamio-pill-cta:active {
+    transform: translateY(1px) scale(0.98);
+  }
+  
+  .roamio-pill-cta::after {
+    display: none;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .roamio-pill-cta {
+    bottom: 92px;
+    right: 24px;
+    left: auto;
+    transform: translateY(10px);
+  }
+
+  .roamio-pill-cta.show {
+    transform: translateY(0);
+  }
+
+  .roamio-pill-cta:hover {
+    transform: translateY(-4px) scale(1.05);
+  }
+}
+
+@media print {
+  .roamio-pill-cta {
+    display: none !important;
+  }
+}
+
+
+/* Roamio Modal Styles */
+.roamio-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, visibility 0.15s ease; /* Changed from 0.3s to 0.15s */
+  padding: 1rem;
+}
+
+.roamio-modal-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.roamio-modal-content {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fc 100%);
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 480px;
+  width: 100%;
+  padding: 2rem;
+  position: relative;
+  transform: scale(0.95) translateY(10px); /* Changed from scale(0.9) and translateY(20px) */
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); /* Changed from 0.3s ease, added bounce effect */
+}
+
+body.dark .roamio-modal-content {
+  background: linear-gradient(135deg, #1e2533 0%, #16213e 100%);
+}
+
+.roamio-modal-overlay.show .roamio-modal-content {
+  transform: scale(1) translateY(0);
+}
+
+.roamio-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(0, 0, 0, 0.05);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease; /* Changed from 0.2s to 0.15s */
+  color: var(--text-secondary);
+}
+
+.roamio-modal-close:hover {
+  background: rgba(0, 0, 0, 0.1);
+  transform: scale(1.1);
+}
+
+.roamio-modal-close:active {
+  transform: scale(0.95);
+}
+
+.roamio-modal-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.roamio-modal-icon {
+  margin: 0 auto 1rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.roamio-modal-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.roamio-modal-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.roamio-modal-btn {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease; /* Changed from 0.3s to 0.2s */
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.roamio-modal-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
+  opacity: 0;
+  transition: opacity 0.2s ease; /* Changed from 0.3s to 0.2s */
+}
+
+.roamio-modal-btn:hover::before {
+  opacity: 1;
+}
+
+.roamio-modal-btn:active {
+  transform: scale(0.98);
+}
+
+.roamio-modal-btn svg {
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.roamio-btn-label {
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.roamio-btn-free {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.roamio-btn-free:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+}
+
+.roamio-btn-free:active {
+  transform: scale(0.98);
+}
+
+.roamio-btn-upgrade {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+  border: 2px solid rgba(251, 191, 36, 0.3);
+  transform: scale(1.03);
+}
+
+.roamio-btn-upgrade:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 10px 24px rgba(245, 158, 11, 0.5);
+}
+
+.roamio-btn-upgrade:active {
+  transform: scale(1.01);
+}
+
+.roamio-btn-upgrade .roamio-btn-label {
+  font-size: 1.0625rem;
+}
+
+.roamio-btn-premium {
+  background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+  color: #1a1a2e;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.roamio-btn-premium svg {
+  fill: #1a1a2e;
+}
+
+.roamio-btn-premium:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+}
+
+.roamio-btn-premium:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 768px) {
+  .roamio-modal-content {
+    padding: 1.5rem;
+    max-width: 95%;
+  }
+  
+  .roamio-modal-title {
+    font-size: 1.25rem;
+  }
+  
+  .roamio-modal-btn {
+    padding: 0.875rem 1rem;
+  }
+  
+  .roamio-btn-label {
+    font-size: 0.9375rem;
+  }
+  
+  .roamio-btn-upgrade .roamio-btn-label {
+    font-size: 1rem;
+  }
+}
+
+@media print {
+  .roamio-modal-overlay {
+    display: none !important;
+  }
+}
+
+
+
+/* Header Logo */
+.header-logo-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  padding: 0.4rem;
+  border-radius: 0.5rem;
+  width: 44px;
+  height: 44px;
+}
+
+.header-logo-link:hover {
+  background: var(--gradient-subtle);
+  transform: scale(1.05);
+}
+
+.header-logo-icon {
+  width: 40px;
+  height: 40px;
+  color: var(--primary);
+  transition: transform 0.2s ease;
+}
+
+.header-logo-link:hover .header-logo-icon {
+  transform: rotate(-8deg);
+}
+
+@media (max-width: 768px) {
+  .header-logo-link {
+    width: 40px;
+    height: 40px;
+    padding: 0.3rem;
+  }
+  
+  .header-logo-icon {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+</style>
+</head>
+<body>
+<div class="scroll-progress"></div>
+<header class="page-header" id="page-header">
+  <div class="page-header-content">
+    <div class="page-header-left">
+      <a href="https://roamio.travel" class="header-logo-link" target="_blank" rel="noopener noreferrer" title="Visit Roamio">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="header-logo-icon">
+          <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>
+        </svg>
+      </a>
+      <h1 class="page-title">Detailed Itinerary</h1>
+    </div>
+  </div>
+  <div class="page-header-underline"></div>
+</header>
+<button class="whatsapp-fab" onclick="openWhatsAppSupport()" aria-label="WhatsApp Support" title="Chat with us on WhatsApp">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488" fill="currentColor"/>
+  </svg>
+</button>
+<button class="share-fab" onclick="shareItinerary()" aria-label="Share itinerary">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M18 8C19.6569 8 21 6.65685 21 5C21 3.34315 19.6569 2 18 2C16.3431 2 15 3.34315 15 5C15 5.12548 15.0077 5.24917 15.0227 5.37061L8.08259 9.19346C7.54305 8.46898 6.71957 8 5.79412 8C4.13726 8 2.79412 9.34315 2.79412 11C2.79412 12.6569 4.13726 14 5.79412 14C6.71957 14 7.54305 13.531 8.08259 12.8065L15.0227 16.6294C15.0077 16.7508 15 16.8745 15 17C15 18.6569 16.3431 20 18 20C19.6569 20 21 18.6569 21 17C21 15.3431 19.6569 14 18 14C17.0746 14 16.2511 14.469 15.7116 15.1935L8.77145 11.3706C8.78647 11.2492 8.79412 11.1255 8.79412 11C8.79412 10.8745 8.78647 10.7508 8.77145 10.6294L15.7116 6.80654C16.2511 7.53102 17.0746 8 18 8Z" fill="white"/>
+  </svg>
+</button>
+<button class="toc-fab" onclick="toggleFloatingTOC()" aria-label="Toggle Table of Contents">📋 Contents</button>
+<div class="content-wrapper">
+  <div class="content-container">
+    <main class="main-content">
+      <h3 id="1-day-by-day-itinerary-table" data-section="1-day-by-day-itinerary-table">1. Day-by-Day Itinerary Table 🌍💼🕒</h3>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+  <th>Day & Date 📅</th>
+  <th>Place 🏙️</th>
+  <th>Morning–Afternoon ☀️</th>
+  <th>Evening 🌙</th>
+  <th>Notes 📝</th>
+  <th>Images</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Day & Date 📅">Day 1: Jan 25</td>
+  <td data-label="Place 🏙️">Muscat 🕌</td>
+  <td data-label="Morning–Afternoon ☀️">Arrive & check-in; <a href="https://www.google.com/search?q=Mutrah+Souq+Muscat" target="_blank" rel="noopener noreferrer">Mutrah Souq</a></td>
+  <td data-label="Evening 🌙"><a href="https://www.google.com/search?q=Mutrah+Corniche+Muscat" target="_blank" rel="noopener noreferrer">Mutrah Corniche</a> walk</td>
+  <td data-label="Notes 📝">Light day to settle in after the flight.</td>
+  <td data-label="Images" class="images-cell"><div class="unsplash-carousel-container"><div class="unsplash-carousel">
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Mutrah Souq Muscat</div>
+          <img src="https://images.unsplash.com/photo-1681753154174-9346a1acd699?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwxfHxNdXRyYWglMjBTb3VxJTIwTXVzY2F0fGVufDB8MHx8fDE3NjY4MzU0MjZ8MA&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by SnapSaga" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@catauggie?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">SnapSaga</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Mutrah Souq Muscat</div>
+          <img src="https://images.unsplash.com/photo-1597725095342-a4796c65bbec?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwyfHxNdXRyYWglMjBTb3VxJTIwTXVzY2F0fGVufDB8MHx8fDE3NjY4MzU0MjZ8MA&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by Mr MaroX" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@yeassin619?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Mr MaroX</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Mutrah Corniche Muscat</div>
+          <img src="https://images.unsplash.com/photo-1737026453892-c353b7610c69?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwxfHxNdXRyYWglMjBDb3JuaWNoZSUyME11c2NhdHxlbnwwfDB8fHwxNzY2ODM1NDI2fDA&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by SeenPotos" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@seenpotos?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">SeenPotos</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Mutrah Corniche Muscat</div>
+          <img src="https://images.unsplash.com/photo-1597725095342-a4796c65bbec?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwyfHxNdXRyYWglMjBDb3JuaWNoZSUyME11c2NhdHxlbnwwfDB8fHwxNzY2ODM1NDI2fDA&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by Mr MaroX" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@yeassin619?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Mr MaroX</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      </div></div></td>
+</tr>
+<tr>
+  <td data-label="Day & Date 📅">Day 2: Jan 26</td>
+  <td data-label="Place 🏙️">Muscat 🕌</td>
+  <td data-label="Morning–Afternoon ☀️"><a href="https://www.google.com/search?q=Sultan+Qaboos+Grand+Mosque+Muscat" target="_blank" rel="noopener noreferrer">Sultan Qaboos Grand Mosque</a></td>
+  <td data-label="Evening 🌙"><a href="https://www.google.com/search?q=Royal+Opera+House+Muscat" target="_blank" rel="noopener noreferrer">Royal Opera House Muscat</a></td>
+  <td data-label="Notes 📝">Remember mosque dress code (scarf/long sleeves).</td>
+  <td data-label="Images" class="images-cell"><div class="unsplash-carousel-container"><div class="unsplash-carousel">
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Sultan Qaboos Grand Mosque Muscat</div>
+          <img src="https://images.unsplash.com/photo-1596891347912-212c389463b9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwxfHxTdWx0YW4lMjBRYWJvb3MlMjBHcmFuZCUyME1vc3F1ZSUyME11c2NhdHxlbnwwfDB8fHwxNzY2ODM1NDI3fDA&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by Mr MaroX" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@yeassin619?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Mr MaroX</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Sultan Qaboos Grand Mosque Muscat</div>
+          <img src="https://images.unsplash.com/photo-1597725001248-04492a5fb87d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwyfHxTdWx0YW4lMjBRYWJvb3MlMjBHcmFuZCUyME1vc3F1ZSUyME11c2NhdHxlbnwwfDB8fHwxNzY2ODM1NDI3fDA&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by Mr MaroX" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@yeassin619?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Mr MaroX</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Royal Opera House Muscat</div>
+          <img src="https://images.unsplash.com/photo-1686040692133-78e5d176001d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwxfHxSb3lhbCUyME9wZXJhJTIwSG91c2UlMjBNdXNjYXR8ZW58MHwwfHx8MTc2NjgzNTQyN3ww&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by Ashutosh Oza" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@ashutoshoza?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Ashutosh Oza</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Royal Opera House Muscat</div>
+          <img src="https://images.unsplash.com/photo-1755114422002-87a92bbe7703?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwyfHxSb3lhbCUyME9wZXJhJTIwSG91c2UlMjBNdXNjYXR8ZW58MHwwfHx8MTc2NjgzNTQyN3ww&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by Krzysztof" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@krzysztof_h?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Krzysztof</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      </div></div></td>
+</tr>
+<tr>
+  <td data-label="Day & Date 📅">Day 3: Jan 27</td>
+  <td data-label="Place 🏙️">Muscat → Jebel Akhdar ⛰️</td>
+  <td data-label="Morning–Afternoon ☀️"><a href="https://www.google.com/search?q=Birkat+Al+Mouz+Oman" target="_blank" rel="noopener noreferrer">Birkat Al Mouz Ruins</a></td>
+  <td data-label="Evening 🌙">Sunset at <a href="https://www.google.com/search?q=Diana's+Point+Jebel+Akhdar" target="_blank" rel="noopener noreferrer">Diana’s Point</a></td>
+  <td data-label="Notes 📝">4x4 vehicle is mandatory for the mountain checkpoint.</td>
+  <td data-label="Images" class="images-cell"><div class="unsplash-carousel-container"><div class="unsplash-carousel">
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Birkat Al Mouz Oman</div>
+          <img src="https://images.unsplash.com/photo-1749573190592-837cc54740d1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwxfHxCaXJrYXQlMjBBbCUyME1vdXolMjBPbWFufGVufDB8MHx8fDE3NjY4MzU0Mjh8MA&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by Husam Harrasi" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@harrasi?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Husam Harrasi</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Birkat Al Mouz Oman</div>
+          <img src="https://images.unsplash.com/photo-1704458162449-79df71b4f5bf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwyfHxCaXJrYXQlMjBBbCUyME1vdXolMjBPbWFufGVufDB8MHx8fDE3NjY4MzU0Mjh8MA&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by Ronnie Khan" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@iamronstar?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Ronnie Khan</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      </div></div></td>
+</tr>
+<tr>
+  <td data-label="Day & Date 📅">Day 4: Jan 28</td>
+  <td data-label="Place 🏙️">Jebel Akhdar ⛰️</td>
+  <td data-label="Morning–Afternoon ☀️"><a href="https://www.google.com/search?q=Wadi+Bani+Habib+Jebel+Akhdar" target="_blank" rel="noopener noreferrer">Wadi Bani Habib</a> trekking</td>
+  <td data-label="Evening 🌙">Relax at <a href="https://www.google.com/search?q=Anantara+Jebel+Akhdar+Viewpoint" target="_blank" rel="noopener noreferrer">Anantara Viewpoint</a></td>
+  <td data-label="Notes 📝">High altitude; temperatures drop significantly.</td>
+  <td data-label="Images" class="images-cell"><div class="unsplash-carousel-container"><div class="unsplash-carousel">
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Wadi Bani Habib Jebel Akhdar</div>
+          <img src="https://images.unsplash.com/photo-1759039295965-36609bfba7f5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwxfHxXYWRpJTIwQmFuaSUyMEhhYmliJTIwSmViZWwlMjBBa2hkYXJ8ZW58MHwwfHx8MTc2NjgzNTQyOXww&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by Vitalii Hapon" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@vitaliihapon?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Vitalii Hapon</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Wadi Bani Habib Jebel Akhdar</div>
+          <img src="https://images.unsplash.com/photo-1764724215462-e8dbe548adce?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwyfHxXYWRpJTIwQmFuaSUyMEhhYmliJTIwSmViZWwlMjBBa2hkYXJ8ZW58MHwwfHx8MTc2NjgzNTQyOXww&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by Steve Marquez" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@stmarq?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Steve Marquez</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Anantara Jebel Akhdar</div>
+          <img src="https://images.unsplash.com/photo-1674979670990-624219d5d0b8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwxfHxBbmFudGFyYSUyMEplYmVsJTIwQWtoZGFyfGVufDB8MHx8fDE3NjY4MzU0Mjl8MA&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by Santhosh Sethumadhavan" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@santoshbayer?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Santhosh Sethumadhavan</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Anantara Jebel Akhdar</div>
+          <img src="https://images.unsplash.com/photo-1723883619281-7521590743cb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwyfHxBbmFudGFyYSUyMEplYmVsJTIwQWtoZGFyfGVufDB8MHx8fDE3NjY4MzU0Mjl8MA&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by thomas" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@reverbbau?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">thomas</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      </div></div></td>
+</tr>
+<tr>
+  <td data-label="Day & Date 📅">Day 5: Jan 29</td>
+  <td data-label="Place 🏙️">Jebel Akhdar → Wahiba Sands ⛺</td>
+  <td data-label="Morning–Afternoon ☀️">Drive to desert; <a href="https://www.google.com/search?q=Dune+Bashing+Wahiba+Sands" target="_blank" rel="noopener noreferrer">Dune Bashing</a></td>
+  <td data-label="Evening 🌙"><a href="https://www.google.com/search?q=Desert+Glamping+Wahiba+Sands" target="_blank" rel="noopener noreferrer">Desert Glamping</a> under stars</td>
+  <td data-label="Notes 📝">Deflate tires at Bidiyah before entering dunes.</td>
+  <td data-label="Images" class="images-cell"><div class="unsplash-carousel-container"><div class="unsplash-carousel">
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Wahiba Sands Oman</div>
+          <img src="https://images.unsplash.com/photo-1680180645260-cf8fc26789c7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwxfHxXYWhpYmElMjBTYW5kcyUyME9tYW58ZW58MHwwfHx8MTc2NjgzNTQzMHww&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by Daniele Levis Pelusi" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@yogidan2012?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Daniele Levis Pelusi</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Wahiba Sands Oman</div>
+          <img src="https://images.unsplash.com/photo-1584885985277-11c8182ce78a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwyfHxXYWhpYmElMjBTYW5kcyUyME9tYW58ZW58MHwwfHx8MTc2NjgzNTQzMHww&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by Marc Wieland" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@mawiswiss?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Marc Wieland</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Desert Glamping Wahiba Sands</div>
+          <img src="https://images.unsplash.com/photo-1685792689144-ab617ee16bcf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwxfHxEZXNlcnQlMjBHbGFtcGluZyUyMFdhaGliYSUyMFNhbmRzfGVufDB8MHx8fDE3NjY4MzU0MzB8MA&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by Azzedine Rouichi" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@rouichi?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Azzedine Rouichi</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Desert Glamping Wahiba Sands</div>
+          <img src="https://images.unsplash.com/photo-1646804325632-4a263f37e85a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwyfHxEZXNlcnQlMjBHbGFtcGluZyUyMFdhaGliYSUyMFNhbmRzfGVufDB8MHx8fDE3NjY4MzU0MzB8MA&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by Bernd 📷 Dittrich" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@hdbernd?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Bernd 📷 Dittrich</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      </div></div></td>
+</tr>
+<tr>
+  <td data-label="Day & Date 📅">Day 6: Jan 30</td>
+  <td data-label="Place 🏙️">Wahiba Sands → Muscat 🛫</td>
+  <td data-label="Morning–Afternoon ☀️"><a href="https://www.google.com/search?q=Wadi+Bani+Khalid+Oman" target="_blank" rel="noopener noreferrer">Wadi Bani Khalid</a> swimming</td>
+  <td data-label="Evening 🌙">Transfer to <a href="https://www.google.com/search?q=Muscat+International+Airport" target="_blank" rel="noopener noreferrer">Muscat Airport</a></td>
+  <td data-label="Notes 📝">Early start to maximize wadi swim time.</td>
+  <td data-label="Images" class="images-cell"><div class="unsplash-carousel-container"><div class="unsplash-carousel">
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Wadi Bani Khalid Oman</div>
+          <img src="https://images.unsplash.com/photo-1674369103209-baa313acae83?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwxfHxXYWRpJTIwQmFuaSUyMEtoYWxpZCUyME9tYW58ZW58MHwwfHx8MTc2NjgzNTQzMHww&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by Secret Travel Guide" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@secrettravelguide?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Secret Travel Guide</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      </div></div></td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h3 id="2-visa-requirements-entry-rules" data-section="2-visa-requirements-entry-rules">2. Visa Requirements & Entry Rules 🛂</h3>
+<h4 id="visa-summary-based-on-nationality-british" data-section="visa-summary-based-on-nationality-british">🛂 Visa Summary (Based on Nationality: British 🪪)</h4>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+  <th>Visa Regime 🌍</th>
+  <th>Covers Destinations 🗺️</th>
+  <th>Entry Requirement ✅</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Visa Regime 🌍">Oman Short Stay</td>
+  <td data-label="Covers Destinations 🗺️">Muscat, Jebel Akhdar, Wahiba Sands</td>
+  <td data-label="Entry Requirement ✅">Visa-Free (up to 14 days)</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="oman-visa-free-entry" data-section="oman-visa-free-entry">📍 Oman — Visa-Free Entry</h4>
+<ul>
+<li><strong>Who needs it:</strong> British citizens (and 100+ other nationalities).</li>
+<li><strong>Entry type:</strong> Visa-Free.</li>
+<li><strong>Maximum permitted stay:</strong> 14 days (non-extendable).</li>
+<li><strong>Where & how to apply:</strong> Not required; entry stamp granted at Muscat International Airport (MCT).</li>
+</ul>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+  <th>Document 📄</th>
+  <th>Details 📝</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Document 📄">Valid Passport</td>
+  <td data-label="Details 📝">Must be valid for at least 6 months from date of entry.</td>
+</tr>
+<tr>
+  <td data-label="Document 📄">Return/Onward Ticket</td>
+  <td data-label="Details 📝">Proof of confirmed flight out of Oman.</td>
+</tr>
+<tr>
+  <td data-label="Document 📄">Accommodation Proof</td>
+  <td data-label="Details 📝">Confirmed hotel/resort booking for the duration of stay.</td>
+</tr>
+<tr>
+  <td data-label="Document 📄">Health Insurance</td>
+  <td data-label="Details 📝">Travel insurance covering COVID-19 and health expenses in Oman.</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h3 id="3-budget-optimizer" data-section="3-budget-optimizer">3. Budget Optimizer 💰📊</h3>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+  <th>Area 💡</th>
+  <th>Recommendation 🎯</th>
+  <th>Potential Impact 💰</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Area 💡">Flights ✈️</td>
+  <td data-label="Recommendation 🎯">Book Oman Air directly or check indirect flights via Dubai/Abu Dhabi + coach.</td>
+  <td data-label="Potential Impact 💰">≈ £100–£150</td>
+</tr>
+<tr>
+  <td data-label="Area 💡">Local Transport 🚖</td>
+  <td data-label="Recommendation 🎯">Renting a 4x4 for the full trip is cheaper than booking private desert/mountain transfers.</td>
+  <td data-label="Potential Impact 💰">≈ £80–£120</td>
+</tr>
+<tr>
+  <td data-label="Area 💡">Activities 🎟️</td>
+  <td data-label="Recommendation 🎯">Self-guide through Birkat Al Mouz and Wadi Bani Khalid instead of hiring private day-guides.</td>
+  <td data-label="Potential Impact 💰">≈ £40–£70</td>
+</tr>
+<tr>
+  <td data-label="Area 💡">Food 🍽️</td>
+  <td data-label="Recommendation 🎯">Eat at local "Coffee Shops" or Mandi houses in Nizwa/Muscat rather than hotel buffets.</td>
+  <td data-label="Potential Impact 💰">≈ £50–£90</td>
+</tr>
+<tr>
+  <td data-label="Area 💡">Overall 💰</td>
+  <td data-label="Recommendation 🎯">Travel in late Jan avoids the peak holiday surge but keeps the ideal weather.</td>
+  <td data-label="Potential Impact 💰">Cost risk reduction</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h3 id="4-miscellaneous-travel-notes" data-section="4-miscellaneous-travel-notes">4. Miscellaneous Travel Notes 📝💡</h3>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+  <th>Destination 🌍</th>
+  <th>Payment Notes 💳</th>
+  <th>Charger Type 🔌</th>
+  <th>SIM Card Info 📱</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Destination 🌍">Muscat</td>
+  <td data-label="Payment Notes 💳">Cards accepted in malls/hotels. Cash for Souqs.</td>
+  <td data-label="Charger Type 🔌">Type G (UK Style) 🔌</td>
+  <td data-label="SIM Card Info 📱">Omantel/Ooredoo at Airport.</td>
+</tr>
+<tr>
+  <td data-label="Destination 🌍">Jebel Akhdar</td>
+  <td data-label="Payment Notes 💳">Cards accepted at major resorts.</td>
+  <td data-label="Charger Type 🔌">Type G 🔌</td>
+  <td data-label="SIM Card Info 📱">Signal can be spotty in canyons.</td>
+</tr>
+<tr>
+  <td data-label="Destination 🌍">Wahiba Sands</td>
+  <td data-label="Payment Notes 💳">Cash highly recommended for camp extras.</td>
+  <td data-label="Charger Type 🔌">Type G 🔌</td>
+  <td data-label="SIM Card Info 📱">Limited signal in deep dunes.</td>
+</tr>
+</tbody>
+</table></div>
+<h5 id="4a-suggested-apps" data-section="4a-suggested-apps">4a. Suggested Apps 📲✨</h5>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+  <th>Destination 🌍</th>
+  <th>Transport App 🚗</th>
+  <th>Food & Dining App 🍽️</th>
+  <th>Activities & Sightseeing App 🏄</th>
+  <th>Other Useful Apps 🌐💳🗺️</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Destination 🌍">Muscat</td>
+  <td data-label="Transport App 🚗"><strong>Otaxi</strong>, Marhaba</td>
+  <td data-label="Food & Dining App 🍽️">Talabat, OmanEats</td>
+  <td data-label="Activities & Sightseeing App 🏄">Klook, GetYourGuide, Viator <em>(Compare prices—rates vary)</em></td>
+  <td data-label="Other Useful Apps 🌐💳🗺️">Google Maps, XE Currency</td>
+</tr>
+<tr>
+  <td data-label="Destination 🌍">Jebel Akhdar</td>
+  <td data-label="Transport App 🚗"><strong>Otaxi</strong> (Limited)</td>
+  <td data-label="Food & Dining App 🍽️">Hotel Apps</td>
+  <td data-label="Activities & Sightseeing App 🏄">Klook, GetYourGuide, Viator <em>(Compare prices—rates vary)</em></td>
+  <td data-label="Other Useful Apps 🌐💳🗺️">Windy (Weather), Maps.me</td>
+</tr>
+<tr>
+  <td data-label="Destination 🌍">Wahiba Sands</td>
+  <td data-label="Transport App 🚗">N/A (4x4 required)</td>
+  <td data-label="Food & Dining App 🍽️">Camp Dining</td>
+  <td data-label="Activities & Sightseeing App 🏄">Klook, GetYourGuide, Viator <em>(Compare prices—rates vary)</em></td>
+  <td data-label="Other Useful Apps 🌐💳🗺️">Star Walk (Stargazing)</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h3 id="5-pre-trip-checklist" data-section="5-pre-trip-checklist">5. Pre-Trip Checklist 🧳🎒</h3>
+<h5 id="visa-checklist" data-section="visa-checklist">🛂 Visa Checklist</h5>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+  <th>Task ✅</th>
+  <th>✅</th>
+  <th>Required Documents 📄</th>
+  <th>Notes 📝</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Task ✅">Check Passport Validity</td>
+  <td data-label="✅">⬜</td>
+  <td data-label="Required Documents 📄">Passport 🛂</td>
+  <td data-label="Notes 📝">Must have >6 months validity</td>
+</tr>
+<tr>
+  <td data-label="Task ✅">Print Insurance Proof</td>
+  <td data-label="✅">⬜</td>
+  <td data-label="Required Documents 📄">Insurance Certificate</td>
+  <td data-label="Notes 📝">Mandatory for entry</td>
+</tr>
+</tbody>
+</table></div>
+<h5 id="flights-checklist" data-section="flights-checklist">✈️ Flights Checklist</h5>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+  <th>Flight Leg ✈️</th>
+  <th>Date 📅</th>
+  <th>✅</th>
+  <th>Notes 📝</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Flight Leg ✈️">✈️ London/Home → Muscat</td>
+  <td data-label="Date 📅">25 Jan</td>
+  <td data-label="✅">⬜</td>
+  <td data-label="Notes 📝">Evening arrival preferred</td>
+</tr>
+<tr>
+  <td data-label="Flight Leg ✈️">✈️ Muscat → London/Home</td>
+  <td data-label="Date 📅">30 Jan</td>
+  <td data-label="✅">⬜</td>
+  <td data-label="Notes 📝">Night flight common for UK returns</td>
+</tr>
+</tbody>
+</table></div>
+<h5 id="hotels-checklist" data-section="hotels-checklist">🏨 Hotels Checklist</h5>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+  <th>City 🏙️</th>
+  <th>Check-in / Check-out Date 📅</th>
+  <th>✅</th>
+  <th>Notes 📝</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="City 🏙️">🏨 Muscat Central</td>
+  <td data-label="Check-in / Check-out Date 📅">25 Jan – 27 Jan</td>
+  <td data-label="✅">⬜</td>
+  <td data-label="Notes 📝">Near Mutrah or Al Khuwair</td>
+</tr>
+<tr>
+  <td data-label="City 🏙️">🏨 Jebel Akhdar Resort</td>
+  <td data-label="Check-in / Check-out Date 📅">27 Jan – 29 Jan</td>
+  <td data-label="✅">⬜</td>
+  <td data-label="Notes 📝">Check if 4x4 transfer is included</td>
+</tr>
+<tr>
+  <td data-label="City 🏙️">🏨 Wahiba Desert Camp</td>
+  <td data-label="Check-in / Check-out Date 📅">29 Jan – 30 Jan</td>
+  <td data-label="✅">⬜</td>
+  <td data-label="Notes 📝">Confirm arrival time for desert pick-up</td>
+</tr>
+</tbody>
+</table></div>
+<h5 id="activities-checklist" data-section="activities-checklist">🎯 Activities Checklist</h5>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+  <th>Activity 🏄</th>
+  <th>Destination 🗺️</th>
+  <th>✅</th>
+  <th>Notes 📝</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Activity 🏄"><a href="https://www.google.com/search?q=Sultan+Qaboos+Grand+Mosque+Muscat" target="_blank" rel="noopener noreferrer">Grand Mosque Visit</a></td>
+  <td data-label="Destination 🗺️">Muscat</td>
+  <td data-label="✅">⬜</td>
+  <td data-label="Notes 📝">Morning only (08:00 - 11:00)</td>
+</tr>
+<tr>
+  <td data-label="Activity 🏄"><a href="https://www.google.com/search?q=Dune+Bashing+Wahiba+Sands" target="_blank" rel="noopener noreferrer">Dune Bashing Session</a></td>
+  <td data-label="Destination 🗺️">Wahiba Sands</td>
+  <td data-label="✅">⬜</td>
+  <td data-label="Notes 📝">Book with camp in advance</td>
+</tr>
+<tr>
+  <td data-label="Activity 🏄"><a href="https://www.google.com/search?q=Oman+Weather+January" target="_blank" rel="noopener noreferrer">Weather-Appropriate Clothing 👕🧥</a></td>
+  <td data-label="Destination 🗺️">All</td>
+  <td data-label="✅">⬜</td>
+  <td data-label="Notes 📝"><strong>Jan Weather:</strong> Muscat (22°C), Mountains (5°C). Pack layers, fleece for desert/mountains, and modest clothing for city.</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="6-restaurants-nightlife-recommendations" data-section="6-restaurants-nightlife-recommendations">6. Restaurants & Nightlife Recommendations 🍽️🌙</h3>
+<h4 id="recommended-restaurants-cafs" data-section="recommended-restaurants-cafs">🍽️ Recommended Restaurants & Cafés</h4>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+  <th>Destination 🌍</th>
+  <th>Name 🍴☕</th>
+  <th>Type / Cuisine 🍲</th>
+  <th>Price Level 💰</th>
+  <th>Notes 📝</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Destination 🌍"><strong>Muscat</strong></td>
+  <td data-label="Name 🍴☕"><a href="https://www.google.com/search?q=Bait+Al+Luban+Muscat" target="_blank" rel="noopener noreferrer">Bait Al Luban</a></td>
+  <td data-label="Type / Cuisine 🍲">Traditional Omani</td>
+  <td data-label="Price Level 💰">$$</td>
+  <td data-label="Notes 📝"><strong>Michelin Substitute (Bib Gourmand style).</strong> Authentic Omani heritage; try the <em>Shuwa</em> and frankincense ice cream.</td>
+</tr>
+<tr>
+  <td data-label="Destination 🌍"></td>
+  <td data-label="Name 🍴☕"><a href="https://www.google.com/search?q=The+Restaurant+The+Chedi+Muscat" target="_blank" rel="noopener noreferrer">The Restaurant at The Chedi</a></td>
+  <td data-label="Type / Cuisine 🍲">Fine Dining / Asian</td>
+  <td data-label="Price Level 💰">$$$</td>
+  <td data-label="Notes 📝">High-end luxury with dramatic high ceilings and four open kitchens; incredibly refined ambiance.</td>
+</tr>
+<tr>
+  <td data-label="Destination 🌍"></td>
+  <td data-label="Name 🍴☕"><a href="https://www.google.com/search?q=Ubhar+Restaurant+Muscat" target="_blank" rel="noopener noreferrer">Ubhar Restaurant</a></td>
+  <td data-label="Type / Cuisine 🍲">Omani Fusion</td>
+  <td data-label="Price Level 💰">$$</td>
+  <td data-label="Notes 📝">Located near the Opera House; offers a modern twist on classic Omani flavors like Camel Biryani.</td>
+</tr>
+<tr>
+  <td data-label="Destination 🌍"></td>
+  <td data-label="Name 🍴☕"><a href="https://www.google.com/search?q=Kargeen+Caffe+Muscat" target="_blank" rel="noopener noreferrer">Kargeen Caffe</a></td>
+  <td data-label="Type / Cuisine 🍲">Middle Eastern / Cafe</td>
+  <td data-label="Price Level 💰">$$</td>
+  <td data-label="Notes 📝">Bohemian garden vibes with lanterns; perfect for a casual evening with fresh juices and shisha.</td>
+</tr>
+<tr>
+  <td data-label="Destination 🌍"><strong>Jebel Akhdar</strong></td>
+  <td data-label="Name 🍴☕"><a href="https://www.google.com/search?q=Juniper+Restaurant+Alila+Jabal+Akhdar" target="_blank" rel="noopener noreferrer">Juniper Restaurant</a></td>
+  <td data-label="Type / Cuisine 🍲"><strong>Michelin ⭐ Level</strong></td>
+  <td data-label="Price Level 💰">$$$</td>
+  <td data-label="Notes 📝">Located at Alila; world-class fine dining focusing on seasonal Omani ingredients with canyon views.</td>
+</tr>
+<tr>
+  <td data-label="Destination 🌍"></td>
+  <td data-label="Name 🍴☕"><a href="https://www.google.com/search?q=Al+Maisan+Anantara+Jebel+Akhdar" target="_blank" rel="noopener noreferrer">Al Maisan</a></td>
+  <td data-label="Type / Cuisine 🍲">International / Arabic</td>
+  <td data-label="Price Level 💰">$$$</td>
+  <td data-label="Notes 📝">Elevated dining at Anantara with a stunning terrace overlooking the "Rising Star" canyon views.</td>
+</tr>
+<tr>
+  <td data-label="Destination 🌍"></td>
+  <td data-label="Name 🍴☕"><a href="https://www.google.com/search?q=Bella+Vista+Anantara+Jebel+Akhdar" target="_blank" rel="noopener noreferrer">Bella Vista</a></td>
+  <td data-label="Type / Cuisine 🍲">Italian</td>
+  <td data-label="Price Level 💰">$$$</td>
+  <td data-label="Notes 📝">Contemporary Italian cuisine served poolside with panoramic mountain vistas.</td>
+</tr>
+<tr>
+  <td data-label="Destination 🌍"></td>
+  <td data-label="Name 🍴☕"><a href="https://www.google.com/search?q=Layali+Al+Jabal+Jebel+Akhdar" target="_blank" rel="noopener noreferrer">Layali Al Jabal</a></td>
+  <td data-label="Type / Cuisine 🍲">Middle Eastern</td>
+  <td data-label="Price Level 💰">$</td>
+  <td data-label="Notes 📝">Authentic, local, and affordable; a great spot for traditional Mandi in the heart of the mountains.</td>
+</tr>
+<tr>
+  <td data-label="Destination 🌍"><strong>Wahiba Sands</strong></td>
+  <td data-label="Name 🍴☕"><a href="https://www.google.com/search?q=Desert+Nights+Camp+Restaurant+Oman" target="_blank" rel="noopener noreferrer">Desert Nights Camp Dining</a></td>
+  <td data-label="Type / Cuisine 🍲"><strong>Michelin Substitute</strong></td>
+  <td data-label="Price Level 💰">$$$</td>
+  <td data-label="Notes 📝">Premium starlit dining; features live <em>Shuwa</em> cooking (lamb buried in sand) and luxury Bedouin sets.</td>
+</tr>
+<tr>
+  <td data-label="Destination 🌍"></td>
+  <td data-label="Name 🍴☕"><a href="https://www.google.com/search?q=Starry+Domes+Desert+Camp+Dining" target="_blank" rel="noopener noreferrer">Starry Domes Restaurant</a></td>
+  <td data-label="Type / Cuisine 🍲">Arabic Buffet</td>
+  <td data-label="Price Level 💰">$$</td>
+  <td data-label="Notes 📝">Intimate setting with fresh Omani bread and traditional delicacies served under the open sky.</td>
+</tr>
+<tr>
+  <td data-label="Destination 🌍"></td>
+  <td data-label="Name 🍴☕"><a href="https://www.google.com/search?q=Thousand+Nights+Camp+Restaurant" target="_blank" rel="noopener noreferrer">Thousand Nights Restaurant</a></td>
+  <td data-label="Type / Cuisine 🍲">Omani / International</td>
+  <td data-label="Price Level 💰">$$</td>
+  <td data-label="Notes 📝">Set under unique Cineraria trees; offers a mix of local flavors in a historic, rustic desert atmosphere.</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h4 id="nightlife-evening-entertainment" data-section="nightlife-evening-entertainment">🌙 Nightlife & Evening Entertainment</h4>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+  <th>Destination 🌍</th>
+  <th>Venue Name 🌙</th>
+  <th>Type 🎶</th>
+  <th>Price Level 💰</th>
+  <th>Notes 📝</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Destination 🌍"><strong>Muscat</strong></td>
+  <td data-label="Venue Name 🌙"><a href="https://www.google.com/search?q=Sama+Terrazza+Muscat" target="_blank" rel="noopener noreferrer">Sama Terrazza</a></td>
+  <td data-label="Type 🎶">Rooftop Lounge</td>
+  <td data-label="Price Level 💰">$$$</td>
+  <td data-label="Notes 📝">Sleek rooftop bar at Park Inn with a pool, resident DJs, and panoramic city skyline views.</td>
+</tr>
+<tr>
+  <td data-label="Destination 🌍"></td>
+  <td data-label="Venue Name 🌙"><a href="https://www.google.com/search?q=John+Barry+Bar+Muscat" target="_blank" rel="noopener noreferrer">John Barry Bar</a></td>
+  <td data-label="Type 🎶">Nautical Lounge</td>
+  <td data-label="Price Level 💰">$$$</td>
+  <td data-label="Notes 📝">Sophisticated, naval-themed bar at Grand Hyatt with live piano music and creative cocktails.</td>
+</tr>
+<tr>
+  <td data-label="Destination 🌍"><strong>Jebel Akhdar</strong></td>
+  <td data-label="Venue Name 🌙"><a href="https://www.google.com/search?q=Al+Qalaa+Anantara+Jebel+Akhdar" target="_blank" rel="noopener noreferrer">Al Qalaa Lounge</a></td>
+  <td data-label="Type 🎶">Fort Lounge</td>
+  <td data-label="Price Level 💰">$$$</td>
+  <td data-label="Notes 📝">Housed in a traditional fort-style building; ideal for a quiet evening of mocktails and mountain air.</td>
+</tr>
+<tr>
+  <td data-label="Destination 🌍"></td>
+  <td data-label="Venue Name 🌙"><a href="https://www.google.com/search?q=Dianas+Point+Sunset+Experience" target="_blank" rel="noopener noreferrer">Golden Hour at Diana's Point</a></td>
+  <td data-label="Type 🎶">Sunset Lounge</td>
+  <td data-label="Price Level 💰">$$$</td>
+  <td data-label="Notes 📝">The most iconic evening spot on the mountain for sundowners (non-alcoholic or at resort bars).</td>
+</tr>
+<tr>
+  <td data-label="Destination 🌍"><strong>Wahiba Sands</strong></td>
+  <td data-label="Venue Name 🌙"><a href="https://www.google.com/search?q=Canvas+Club+Oman+Majlis" target="_blank" rel="noopener noreferrer">The Majlis Firepit</a></td>
+  <td data-label="Type 🎶">Desert Lounge</td>
+  <td data-label="Price Level 💰">$$</td>
+  <td data-label="Notes 📝">Traditional Bedouin-style floor seating around a campfire; the ultimate venue for stargazing.</td>
+</tr>
+<tr>
+  <td data-label="Destination 🌍"></td>
+  <td data-label="Venue Name 🌙"><a href="https://www.google.com/search?q=Thousand+Nights+Camp+Pool+Bar" target="_blank" rel="noopener noreferrer">Oasis Pool Bar</a></td>
+  <td data-label="Type 🎶">Poolside Lounge</td>
+  <td data-label="Price Level 💰">$$</td>
+  <td data-label="Notes 📝">A rare desert oasis setting at Thousand Nights Camp to enjoy a cool drink under the stars.</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h3 id="7-instagram-trending-viral-places" data-section="7-instagram-trending-viral-places">7. Instagram-Trending & Viral Places 📸🔥</h3>
+<h4 id="destination-muscat" data-section="destination-muscat">📍 Destination: Muscat</h4>
+<p>These spots are currently lighting up Instagram Reels and Stories — combining unique design, atmosphere, and creativity for unforgettable photos and short-form content.</p>
+<strong>1. The New Architectural & Art Sensations 🏙️🎭</strong>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+  <th>Place</th>
+  <th>Location & Vibe</th>
+  <th>Why it's VIRAL on Insta</th>
+  <th>The Perfect Shot</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Place"><strong><a href="https://www.google.com/search?q=Royal+Opera+House+Muscat" target="_blank" rel="noopener noreferrer">Royal Opera House</a></strong></td>
+  <td data-label="Location & Vibe">Polished marble masterpiece</td>
+  <td data-label="Why it's VIRAL on Insta">Symmetrical arches and reflective white marble floors</td>
+  <td data-label="The Perfect Shot">Wide-angle shot in the courtyard capturing the marble glow</td>
+</tr>
+<tr>
+  <td data-label="Place"><strong><a href="https://www.google.com/search?q=Kempinski+Muscat+Lobby" target="_blank" rel="noopener noreferrer">Kempinski Hotel Lobby</a></strong></td>
+  <td data-label="Location & Vibe">Modern minimalist luxury</td>
+  <td data-label="Why it's VIRAL on Insta">Architecturally striking vertical columns and dramatic lighting</td>
+  <td data-label="The Perfect Shot">Symmetrical perspective shot from the center of the lobby</td>
+</tr>
+<tr>
+  <td data-label="Place"><strong><a href="https://www.google.com/search?q=Mutrah+Fort+Cafe" target="_blank" rel="noopener noreferrer">Mutrah Fort Café</a></strong></td>
+  <td data-label="Location & Vibe">Rooftop heritage spot</td>
+  <td data-label="Why it's VIRAL on Insta">"Hidden gem" vibes with a 360-degree view of the harbor</td>
+  <td data-label="The Perfect Shot">Reel showing the transition from the fort stairs to the bay view</td>
+</tr>
+</tbody>
+</table></div>
+<strong>2. Iconic & Heritage Harbor Spots 🏛️📷</strong>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+  <th>Place</th>
+  <th>Vibe & Focus</th>
+  <th>Why it's TRULY Trending</th>
+  <th>The Perfect Shot</th>
+  <th>Images</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Place"><strong><a href="https://www.google.com/search?q=Sultan+Qaboos+Grand+Mosque" target="_blank" rel="noopener noreferrer">Sultan Qaboos Grand Mosque</a></strong></td>
+  <td data-label="Vibe & Focus">Islamic architectural icon</td>
+  <td data-label="Why it's TRULY Trending">The massive Swarovski chandelier and intricate mosaics</td>
+  <td data-label="The Perfect Shot">Portrait under the grand arches at opening (8 AM)</td>
+  <td data-label="Images" class="images-cell"><div class="unsplash-carousel-container"><div class="unsplash-carousel">
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Sultan Qaboos Grand Mosque Muscat</div>
+          <img src="https://images.unsplash.com/photo-1596891347912-212c389463b9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwxfHxTdWx0YW4lMjBRYWJvb3MlMjBHcmFuZCUyME1vc3F1ZSUyME11c2NhdHxlbnwwfDB8fHwxNzY2ODM1NDI0fDA&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by Mr MaroX" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@yeassin619?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Mr MaroX</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Sultan Qaboos Grand Mosque Muscat</div>
+          <img src="https://images.unsplash.com/photo-1597725001248-04492a5fb87d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwyfHxTdWx0YW4lMjBRYWJvb3MlMjBHcmFuZCUyME1vc3F1ZSUyME11c2NhdHxlbnwwfDB8fHwxNzY2ODM1NDI0fDA&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by Mr MaroX" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@yeassin619?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Mr MaroX</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Sultan Qaboos Grand Mosque Muscat</div>
+          <img src="https://images.unsplash.com/photo-1653107421939-3b5a3dbc9dc7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwzfHxTdWx0YW4lMjBRYWJvb3MlMjBHcmFuZCUyME1vc3F1ZSUyME11c2NhdHxlbnwwfDB8fHwxNzY2ODM1NDI0fDA&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by Akbar Nemati" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@akbarnemati?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Akbar Nemati</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      </div></div></td>
+</tr>
+<tr>
+  <td data-label="Place"><strong><a href="https://www.google.com/search?q=Mutrah+Corniche" target="_blank" rel="noopener noreferrer">Mutrah Corniche</a></strong></td>
+  <td data-label="Vibe & Focus">Waterfront promenade</td>
+  <td data-label="Why it's TRULY Trending">Classic Muscat silhouette with mountains and dhow boats</td>
+  <td data-label="The Perfect Shot">Golden hour silhouette against the blue mosque dome</td>
+  <td data-label="Images" class="images-cell"><div class="unsplash-carousel-container"><div class="unsplash-carousel">
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Mutrah Corniche</div>
+          <img src="https://images.unsplash.com/photo-1597725095342-a4796c65bbec?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwxfHxNdXRyYWglMjBDb3JuaWNoZXxlbnwwfDB8fHwxNzY2ODM1NDI1fDA&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by Mr MaroX" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@yeassin619?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Mr MaroX</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Mutrah Corniche</div>
+          <img src="https://images.unsplash.com/photo-1737026453892-c353b7610c69?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwyfHxNdXRyYWglMjBDb3JuaWNoZXxlbnwwfDB8fHwxNzY2ODM1NDI1fDA&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by SeenPotos" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@seenpotos?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">SeenPotos</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Mutrah Corniche</div>
+          <img src="https://images.unsplash.com/photo-1763377220365-0277dece6fb8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwzfHxNdXRyYWglMjBDb3JuaWNoZXxlbnwwfDB8fHwxNzY2ODM1NDI1fDA&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by Andy Arbeit" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@izeberg?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Andy Arbeit</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      </div></div></td>
+</tr>
+</tbody>
+</table></div>
+<strong>3. Trending Hangouts (Cafes & Nightlife) ☕🌃🎶</strong>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+  <th>Place</th>
+  <th>Category & Vibe</th>
+  <th>Why it's the LATEST Buzz</th>
+  <th>The Perfect Shot</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Place"><strong><a href="https://www.google.com/search?q=Arabica+Coffee+Muscat" target="_blank" rel="noopener noreferrer">%Arabica Muscat</a></strong></td>
+  <td data-label="Category & Vibe">Minimalist specialty coffee</td>
+  <td data-label="Why it's the LATEST Buzz">Sleek, all-white aesthetic perfect for "clean girl" vibes</td>
+  <td data-label="The Perfect Shot">Flat-lay of the iconic % cup against the minimalist counter</td>
+</tr>
+<tr>
+  <td data-label="Place"><strong><a href="https://www.google.com/search?q=Huqqa+Muscat" target="_blank" rel="noopener noreferrer">Huqqa Muscat</a></strong></td>
+  <td data-label="Category & Vibe">Vibrant lounge & dining</td>
+  <td data-label="Why it's the LATEST Buzz">Neon lights, creative plating, and sea views at Al Mouj</td>
+  <td data-label="The Perfect Shot">Slow-mo reel of their signature nitrogen-smoke desserts</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h4 id="destination-jebel-akhdar" data-section="destination-jebel-akhdar">📍 Destination: Jebel Akhdar</h4>
+<strong>1. The New Architectural & Art Sensations 🏙️🎭</strong>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+  <th>Place</th>
+  <th>Location & Vibe</th>
+  <th>Why it's VIRAL on Insta</th>
+  <th>The Perfect Shot</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Place"><strong><a href="https://www.google.com/search?q=Alila+Jabal+Akhdar+Pool" target="_blank" rel="noopener noreferrer">Alila Infinity Pool</a></strong></td>
+  <td data-label="Location & Vibe">Edge-of-the-world luxury</td>
+  <td data-label="Why it's VIRAL on Insta">Dramatic pool design that seemingly drops into the canyon</td>
+  <td data-label="The Perfect Shot">Low-angle shot showing the water merging with the peaks</td>
+</tr>
+<tr>
+  <td data-label="Place"><strong><a href="https://www.google.com/search?q=Anantara+Jebel+Akhdar+Viewing+Deck" target="_blank" rel="noopener noreferrer">The Glass Deck</a></strong></td>
+  <td data-label="Location & Vibe">Transparent cantilevered deck</td>
+  <td data-label="Why it's VIRAL on Insta">Thrill-factor visuals with nothing but a gorge beneath</td>
+  <td data-label="The Perfect Shot">Looking-down reel capturing the scale of the canyon</td>
+</tr>
+</tbody>
+</table></div>
+<strong>2. Iconic & Mountain Heritage Spots 🏛️📷</strong>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+  <th>Place</th>
+  <th>Vibe & Focus</th>
+  <th>Why it's TRULY Trending</th>
+  <th>The Perfect Shot</th>
+  <th>Images</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Place"><strong><a href="https://www.google.com/search?q=Dianas+Point+Anantara" target="_blank" rel="noopener noreferrer">Diana’s Point</a></strong></td>
+  <td data-label="Vibe & Focus">Royal sunset viewpoint</td>
+  <td data-label="Why it's TRULY Trending">Named after Princess Diana; the most famous vista in Oman</td>
+  <td data-label="The Perfect Shot">Panoramic reel panning from the canyon to the sunset</td>
+  <td data-label="Images" class="images-cell">-</td>
+</tr>
+<tr>
+  <td data-label="Place"><strong><a href="https://www.google.com/search?q=Birkat+Al+Mouz+Ruins" target="_blank" rel="noopener noreferrer">Birkat Al Mouz Ruins</a></strong></td>
+  <td data-label="Vibe & Focus">Ancient mud-brick village</td>
+  <td data-label="Why it's TRULY Trending">Cinematic "Old World" vibes with palm groves</td>
+  <td data-label="The Perfect Shot">Framing the ruins through the arch of a stone doorway</td>
+  <td data-label="Images" class="images-cell"><div class="unsplash-carousel-container"><div class="unsplash-carousel">
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Birkat Al Mouz</div>
+          <img src="https://images.unsplash.com/photo-1609444074870-2860a9a613e3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwxfHxCaXJrYXQlMjBBbCUyME1vdXp8ZW58MHwwfHx8MTc2NjgzNTQyNHww&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by Clay Banks" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@claybanks?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Clay Banks</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Birkat Al Mouz</div>
+          <img src="https://images.unsplash.com/photo-1647424370026-a3ba2fb6d3e4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwyfHxCaXJrYXQlMjBBbCUyME1vdXp8ZW58MHwwfHx8MTc2NjgzNTQyNHww&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by Mahmoud Sulaiman" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@mahmoud_ms1?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Mahmoud Sulaiman</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Birkat Al Mouz</div>
+          <img src="https://images.unsplash.com/flagged/photo-1578515562400-093c8e5f2632?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwzfHxCaXJrYXQlMjBBbCUyME1vdXp8ZW58MHwwfHx8MTc2NjgzNTQyNHww&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by StopPressFilm -" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@stoppressfilm?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">StopPressFilm -</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      </div></div></td>
+</tr>
+</tbody>
+</table></div>
+<strong>3. Trending Hangouts (Cafes & Nightlife) ☕🌃🎶</strong>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+  <th>Place</th>
+  <th>Category & Vibe</th>
+  <th>Why it's the LATEST Buzz</th>
+  <th>The Perfect Shot</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Place"><strong><a href="https://www.google.com/search?q=Coffee+Architecture+Jebel+Akhdar" target="_blank" rel="noopener noreferrer">Coffee Architecture</a></strong></td>
+  <td data-label="Category & Vibe">Boutique mountain cafe</td>
+  <td data-label="Why it's the LATEST Buzz">Artisanal coffee served in a rugged, design-forward space</td>
+  <td data-label="The Perfect Shot">Hand-held shot of coffee with the mountain range backdrop</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h4 id="destination-wahiba-sands" data-section="destination-wahiba-sands">📍 Destination: Wahiba Sands</h4>
+<strong>1. The New Architectural & Art Sensations 🏙️🎭</strong>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+  <th>Place</th>
+  <th>Location & Vibe</th>
+  <th>Why it's VIRAL on Insta</th>
+  <th>The Perfect Shot</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Place"><strong><a href="https://www.google.com/search?q=Starry+Domes+Oman" target="_blank" rel="noopener noreferrer">Starry Domes</a></strong></td>
+  <td data-label="Location & Vibe">Futuristic glamping domes</td>
+  <td data-label="Why it's VIRAL on Insta">White geometric domes against orange sand dunes</td>
+  <td data-label="The Perfect Shot">Night shot with the dome glowing against the Milky Way</td>
+</tr>
+<tr>
+  <td data-label="Place"><strong><a href="https://www.google.com/search?q=Canvas+Club+Oman" target="_blank" rel="noopener noreferrer">Canvas Club Tents</a></strong></td>
+  <td data-label="Location & Vibe">Luxury "Desert Cathedral"</td>
+  <td data-label="Why it's VIRAL on Insta">Oversized white tents with high-end oriental rugs</td>
+  <td data-label="The Perfect Shot">Interior shot looking out the tent flap at the desert dawn</td>
+</tr>
+</tbody>
+</table></div>
+<strong>2. Iconic & Desert Heritage Spots 🏛️📷</strong>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+  <th>Place</th>
+  <th>Vibe & Focus</th>
+  <th>Why it's TRULY Trending</th>
+  <th>The Perfect Shot</th>
+  <th>Images</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Place"><strong><a href="https://www.google.com/search?q=Wahiba+Sands+High+Dunes" target="_blank" rel="noopener noreferrer">The High Dunes</a></strong></td>
+  <td data-label="Vibe & Focus">Natural golden peaks</td>
+  <td data-label="Why it's TRULY Trending">Endless rippled sand patterns that look cinematic</td>
+  <td data-label="The Perfect Shot">High-angle drone-style shot of footprints in the sand</td>
+  <td data-label="Images" class="images-cell"><div class="unsplash-carousel-container"><div class="unsplash-carousel">
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Wahiba Sands</div>
+          <img src="https://images.unsplash.com/photo-1579193219623-8ef5f1baa518?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwxfHxXYWhpYmElMjBTYW5kc3xlbnwwfDB8fHwxNzY2ODM1NDIyfDA&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by Arisa S." loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@hoiarisa?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Arisa S.</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Wahiba Sands</div>
+          <img src="https://images.unsplash.com/photo-1680180486530-ef36f1bfc606?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwyfHxXYWhpYmElMjBTYW5kc3xlbnwwfDB8fHwxNzY2ODM1NDIyfDA&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by Daniele Levis Pelusi" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@yogidan2012?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Daniele Levis Pelusi</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      
+        <div class="unsplash-image-wrapper">
+          <div class="unsplash-place-name">Wahiba Sands</div>
+          <img src="https://images.unsplash.com/photo-1615246445659-ea5716177645?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDA5NjJ8MHwxfHNlYXJjaHwzfHxXYWhpYmElMjBTYW5kc3xlbnwwfDB8fHwxNzY2ODM1NDIyfDA&ixlib=rb-4.1.0&q=80&w=400" alt="Photo by PHILIP ABDO" loading="lazy" />
+          <div class="unsplash-attribution">
+            Photo by <a href="https://unsplash.com/@philip_ebid?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">PHILIP ABDO</a> on <a href="https://unsplash.com?utm_source=Roamio&utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>
+          </div>
+        </div>
+      </div></div></td>
+</tr>
+</tbody>
+</table></div>
+<strong>3. Trending Hangouts (Cafes & Nightlife) ☕🌃🎶</strong>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+  <th>Place</th>
+  <th>Category & Vibe</th>
+  <th>Why it's the LATEST Buzz</th>
+  <th>The Perfect Shot</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Place"><strong><a href="https://www.google.com/search?q=Wahiba+Sands+Majlis+Night" target="_blank" rel="noopener noreferrer">The Firepit Majlis</a></strong></td>
+  <td data-label="Category & Vibe">Open-air desert lounge</td>
+  <td data-label="Why it's the LATEST Buzz">Trending for "Arabian Nights" aesthetic and fire visuals</td>
+  <td data-label="The Perfect Shot">Silhouette shot of travelers sitting by the fire at night</td>
+</tr>
+</tbody>
+</table></div>
+    </main>
+  </div>
+</div>
+
+<button class="roamio-pill-cta" id="roamio-pill" onclick="openRoamioModal()" title="Create your own itinerary">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M21 16V14L13 9V3.5C13 2.67 12.33 2 11.5 2C10.67 2 10 2.67 10 3.5V9L2 14V16L10 13.5V19L8 20.5V22L11.5 21L15 22V20.5L13 19V13.5L21 16Z" fill="white"/>
+  </svg>
+</button>
+
+<!-- Roamio CTA Modal -->
+<div class="roamio-modal-overlay" id="roamio-modal" onclick="closeRoamioModal()">
+  <div class="roamio-modal-content" onclick="event.stopPropagation()">
+    <button class="roamio-modal-close" onclick="closeRoamioModal()" aria-label="Close modal">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    
+    <div class="roamio-modal-header">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="roamio-modal-icon">
+        <path d="M21 16V14L13 9V3.5C13 2.67 12.33 2 11.5 2C10.67 2 10 2.67 10 3.5V9L2 14V16L10 13.5V19L8 20.5V22L11.5 21L15 22V20.5L13 19V13.5L21 16Z" fill="url(#gradient1)"/>
+        <defs>
+          <linearGradient id="gradient1" x1="2" y1="2" x2="21" y2="22" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#667eea"/>
+            <stop offset="1" stop-color="#764ba2"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <h3 class="roamio-modal-title">Ready to Plan Your Adventure?</h3>
+    </div>
+    
+    <div class="roamio-modal-buttons">
+      <a href="https://roamio.travel/#travel-form" target="_blank" rel="noopener noreferrer" class="roamio-modal-btn roamio-btn-free">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 11L12 14L22 4M21 12V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="roamio-btn-label">Get More Free Itineraries</span>
+      </a>
+      
+      <a href="https://roamio.travel/#login" target="_blank" rel="noopener noreferrer" class="roamio-modal-btn roamio-btn-upgrade">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M13 10V3L4 14H11V21L20 10H13Z" fill="white"/>
+        </svg>
+        <span class="roamio-btn-label">Opt for Premium</span>
+      </a>
+      
+      <a href="https://roamio.travel/#premium-features" target="_blank" rel="noopener noreferrer" class="roamio-modal-btn roamio-btn-premium">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor"/>
+        </svg>
+        <span class="roamio-btn-label">See Premium Features</span>
+      </a>
+    </div>
+  </div>
+</div>
+<div class="floating-toc" id="toc">
+    <div class="toc-header" onclick="toggleTOC()">
+      <h3>📋 Contents</h3>
+      <button class="toc-toggle" aria-label="Toggle table of contents">▼</button>
+    </div>
+    <div class="toc-content" id="toc-content"><ul><li style="margin-left: 1.5rem;"><a href="#1-day-by-day-itinerary-table" data-section="1-day-by-day-itinerary-table">1. Day-by-Day Itinerary Table 🌍💼🕒</a></li>
+<li style="margin-left: 1.5rem;"><a href="#2-visa-requirements-entry-rules" data-section="2-visa-requirements-entry-rules">2. Visa Requirements & Entry Rules 🛂</a></li>
+<li style="margin-left: 3rem;"><a href="#visa-summary-based-on-nationality-british" data-section="visa-summary-based-on-nationality-british">🛂 Visa Summary (Based on Nationality: British 🪪)</a></li>
+<li style="margin-left: 3rem;"><a href="#oman-visa-free-entry" data-section="oman-visa-free-entry">📍 Oman — Visa-Free Entry</a></li>
+<li style="margin-left: 1.5rem;"><a href="#3-budget-optimizer" data-section="3-budget-optimizer">3. Budget Optimizer 💰📊</a></li>
+<li style="margin-left: 1.5rem;"><a href="#4-miscellaneous-travel-notes" data-section="4-miscellaneous-travel-notes">4. Miscellaneous Travel Notes 📝💡</a></li>
+<li style="margin-left: 4.5rem;"><a href="#4a-suggested-apps" data-section="4a-suggested-apps">4a. Suggested Apps 📲✨</a></li>
+<li style="margin-left: 1.5rem;"><a href="#5-pre-trip-checklist" data-section="5-pre-trip-checklist">5. Pre-Trip Checklist 🧳🎒</a></li>
+<li style="margin-left: 4.5rem;"><a href="#visa-checklist" data-section="visa-checklist">🛂 Visa Checklist</a></li>
+<li style="margin-left: 4.5rem;"><a href="#flights-checklist" data-section="flights-checklist">✈️ Flights Checklist</a></li>
+<li style="margin-left: 4.5rem;"><a href="#hotels-checklist" data-section="hotels-checklist">🏨 Hotels Checklist</a></li>
+<li style="margin-left: 4.5rem;"><a href="#activities-checklist" data-section="activities-checklist">🎯 Activities Checklist</a></li>
+<li style="margin-left: 1.5rem;"><a href="#6-restaurants-nightlife-recommendations" data-section="6-restaurants-nightlife-recommendations">6. Restaurants & Nightlife Recommendations 🍽️🌙</a></li>
+<li style="margin-left: 3rem;"><a href="#recommended-restaurants-cafs" data-section="recommended-restaurants-cafs">🍽️ Recommended Restaurants & Cafés</a></li>
+<li style="margin-left: 3rem;"><a href="#nightlife-evening-entertainment" data-section="nightlife-evening-entertainment">🌙 Nightlife & Evening Entertainment</a></li>
+<li style="margin-left: 1.5rem;"><a href="#7-instagram-trending-viral-places" data-section="7-instagram-trending-viral-places">7. Instagram-Trending & Viral Places 📸🔥</a></li>
+<li style="margin-left: 3rem;"><a href="#destination-muscat" data-section="destination-muscat">📍 Destination: Muscat</a></li>
+<li style="margin-left: 3rem;"><a href="#destination-jebel-akhdar" data-section="destination-jebel-akhdar">📍 Destination: Jebel Akhdar</a></li>
+<li style="margin-left: 3rem;"><a href="#destination-wahiba-sands" data-section="destination-wahiba-sands">📍 Destination: Wahiba Sands</a></li>
+</ul></div></div>
+<script>
+let scrollTimeout;
+
+
+function openTOC() {
+  const toc = document.getElementById('toc');
+  if (!toc) return;
+  
+  const content = document.getElementById('toc-content');
+  const toggle = document.querySelector('.toc-toggle');
+  if (content && toggle) {
+    content.classList.remove('collapsed');
+    toggle.classList.remove('collapsed');
+  }
+  
+  toc.classList.add('show');
+  document.body.classList.add('toc-open');
+}
+
+
+function closeTOC() {
+  const toc = document.getElementById('toc');
+  if (!toc) return;
+  toc.classList.remove('show');
+  document.body.classList.remove('toc-open');
+}
+
+
+function toggleFloatingTOC() {
+  const toc = document.getElementById('toc');
+  if (!toc) return;
+  if (toc.classList.contains('show')) closeTOC();
+  else openTOC();
+}
+
+
+function toggleTOC() {
+  const content = document.getElementById('toc-content');
+  const toggle = document.querySelector('.toc-toggle');
+  if (content && toggle) {
+    const wasCollapsed = content.classList.contains('collapsed');
+    content.classList.toggle('collapsed');
+    toggle.classList.toggle('collapsed');
+  }
+}
+
+
+function shareItinerary() {
+  const currentUrl = window.location.href;
+  const pageTitle = document.title || 'Travel Itinerary';
+  const shareText = 'Check out this travel itinerary from Roamio!';
+  
+  // Web Share API (works on mobile and some desktop browsers)
+  if (navigator.share) {
+    navigator.share({
+      title: pageTitle,
+      text: shareText,
+      url: currentUrl
+    })
+    .then(() => console.log('Shared successfully'))
+    .catch((error) => {
+      // User cancelled share or error occurred
+      if (error.name !== 'AbortError') {
+        fallbackShare(currentUrl, pageTitle);
+      }
+    });
+  } else {
+    // Fallback for browsers without Web Share API
+    fallbackShare(currentUrl, pageTitle);
+  }
+}
+
+
+function fallbackShare(url, title) {
+  // Try clipboard API first
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url)
+      .then(() => {
+        showShareNotification('Link copied to clipboard! 📋');
+      })
+      .catch(() => {
+        // Fallback to download HTML if clipboard fails
+        downloadHTML(title);
+      });
+  } else {
+    // Direct fallback to download
+    downloadHTML(title);
+  }
+}
+
+
+function downloadHTML(titleText) {
+  const timestamp = new Date().toISOString().slice(0, 10);
+  const filename = titleText.replace(/[^a-z0-9]/gi, '-').toLowerCase() + '-' + timestamp + '.html';
+  
+  const htmlContent = document.documentElement.outerHTML;
+  const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(link.href);
+  
+  showShareNotification('Itinerary downloaded! 📥');
+}
+
+
+function showShareNotification(message) {
+  const notification = document.createElement('div');
+  notification.textContent = message;
+  notification.style.cssText = `
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    z-index: 10001;
+    animation: slideDown 0.3s ease;
+  `;
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.style.animation = 'slideUp 0.3s ease';
+    setTimeout(() => {
+      document.body.removeChild(notification);
+    }, 300);
+  }, 3000);
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+  const hasHash = window.location.hash && window.location.hash.length > 1;
+
+
+  if (hasHash) {
+    closeTOC();
+    setTimeout(() => {
+      const id = window.location.hash.substring(1);
+      const target = document.getElementById(id);
+      if (target) {
+        target.scrollIntoView({ behavior: 'auto', block: 'start' });
+      }
+    }, 0);
+  } else {
+    openTOC();
+  }
+
+  const words = document.body.innerText.split(/\s+/).length;
+  const mins = Math.ceil(words / 200);
+  const h1 = document.querySelector('h1');
+  if (h1 && mins > 0) {
+    const badge = document.createElement('div');
+    badge.className = 'reading-time';
+    badge.textContent = '📖 ' + mins + ' mins read';
+    const headerLeft = document.querySelector('.page-header-left');
+    if (headerLeft) {
+      headerLeft.appendChild(badge);
+    } else {
+      h1.parentNode?.insertBefore(badge, h1.nextSibling);
+    }
+  }
+
+
+  const secObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.getAttribute('id');
+        document.querySelectorAll('.toc a').forEach(a => a.classList.remove('active'));
+        const link = document.querySelector('.toc a[data-section="' + id + '"]');
+        if (link) {
+          link.classList.add('active');
+        }
+      }
+    });
+  }, { threshold: 0.3, rootMargin: '-20% 0px -40% 0px' });
+
+
+  document.querySelectorAll('h2, h3, h4').forEach(h => secObserver.observe(h));
+
+
+  document.addEventListener('click', function(e) {
+    const toc = document.getElementById('toc');
+
+
+    if (toc && toc.classList.contains('show')) {
+      if (!toc.contains(e.target) && !e.target.classList.contains('toc-fab')) {
+        closeTOC();
+      }
+    }
+
+
+    if (e.target.tagName === 'A' && e.target.getAttribute('href')?.startsWith('#')) {
+      const parentToc = e.target.closest('.floating-toc');
+      e.preventDefault();
+      const targetId = e.target.getAttribute('href').substring(1);
+      const target = document.getElementById(targetId);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      if (parentToc) {
+        closeTOC();
+      }
+    }
+  });
+
+  // Add CSS animation for notifications
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+    @keyframes slideUp {
+      from {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+      }
+    }
+  `;
+  document.head.appendChild(style);
+});
+
+
+window.addEventListener('scroll', () => {
+  const bar = document.querySelector('.scroll-progress');
+  if (bar) {
+    const h = document.documentElement.scrollHeight - window.innerHeight;
+    const p = (window.scrollY / h);
+    bar.style.transform = 'scaleX(' + p + ')';
+  }
+
+  const header = document.getElementById('page-header');
+  const tocFab = document.querySelector('.toc-fab');
+  clearTimeout(scrollTimeout);
+  
+  if (window.scrollY > 50) {
+    header.classList.add('hidden');
+    tocFab.classList.add('show');
+  } else {
+    header.classList.remove('hidden');
+    tocFab.classList.remove('show');
+  }
+  
+  scrollTimeout = setTimeout(() => {
+    if (window.scrollY > 100) {
+      header.classList.add('hidden');
+    }
+  }, 150);
+});
+
+// Roamio Pill CTA Logic
+(function() {
+  var pill = document.getElementById('roamio-pill');
+  if (!pill) return; // ctaType === 'none' → no floater at all
+
+  var hasShown = false;
+
+  // Show after 800ms OR 5% scroll (whichever comes first)
+  setTimeout(function() {
+    if (!hasShown) {
+      pill.classList.add('show');
+      hasShown = true;
+    }
+  }, 800);
+
+  window.addEventListener('scroll', function() {
+    var maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    if (maxScroll <= 0) return;
+    var scrollPercent = (window.scrollY / maxScroll) * 100;
+
+    // Show earlier: after 10% scroll instead of feeling like 3-4 seconds delay
+    if (scrollPercent > 10 && !hasShown) {
+      pill.classList.add('show');
+      hasShown = true;
+    }
+  });
+  // Track clicks
+  pill.addEventListener('click', function() {
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'cta_click', {
+        'location': 'floating_pill',
+        'itinerary_type': 'Detailed Itinerary',
+      });
+    }
+  });
+})();
+
+// Roamio Modal Functions
+function openRoamioModal() {
+  const modal = document.getElementById('roamio-modal');
+  if (modal) {
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeRoamioModal() {
+  const modal = document.getElementById('roamio-modal');
+  if (modal) {
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+}
+
+// Close modal on Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeRoamioModal();
+  }
+});
+
+function openWhatsAppSupport() {
+  var baseUrl = 'https://wa.me/919321335420';
+  var message = 'Hey Roamio team, I need help with my itinerary.';  // customise text
+  var url = baseUrl + '?text=' + encodeURIComponent(message);
+  window.open(url, '_blank');
+}
+
+</script>
+</body>
+</html>
